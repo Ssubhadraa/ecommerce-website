@@ -30,16 +30,6 @@ def get_trending_products(limit=12, days=30):
 
 
 def get_frequently_bought_together(product_id, limit=4):
-    results = (
-        db.session.query(Product, func.count().label("freq"))
-        .join(OrderItem, Product.id == OrderItem.product_id)
-        .join(
-            OrderItem,
-            OrderItem.order_id == OrderItem.order_id,
-            isouter=False,
-        )
-    )
-    # Correct query using alias
     oi1 = db.aliased(OrderItem)
     oi2 = db.aliased(OrderItem)
     results = (

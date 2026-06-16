@@ -1,5 +1,3 @@
-"""Seed database with categories, products, users, and sample orders."""
-
 import os
 import random
 from datetime import datetime, timedelta
