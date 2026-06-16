@@ -1,10 +1,3 @@
-"""Add wishlist_items table
-
-Revision ID: a1b2c3d4e5f6
-Revises: bcf63ba1ec91
-Create Date: 2026-06-16 23:55:00.000000
-
-"""
 from alembic import op
 import sqlalchemy as sa
 
