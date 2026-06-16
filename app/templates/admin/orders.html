@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Orders — ShopHub{% endblock %}
+
+{% block content %}
+<div class="container admin-page">
+  <div class="admin-header">
+    <h1>Orders</h1>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('admin.products') }}">Products</a>
+      <a href="{{ url_for('admin.categories') }}">Categories</a>
+      <a href="{{ url_for('admin.orders') }}" class="active">Orders</a>
+    </nav>
+  </div>
+
+  <div class="filter-tabs">
+    <a href="{{ url_for('admin.orders') }}" class="{% if not status %}active{% endif %}">All</a>
+    {% for s in ['placed', 'confirmed', 'shipped', 'delivered', 'cancelled'] %}
+    <a href="{{ url_for('admin.orders', status=s) }}" class="{% if status == s %}active{% endif %}">{{ s|title }}</a>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr><th>Order</th><th>Customer</th><th>Status</th><th>Total</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td><a href="{{ url_for('admin.order_detail', order_number=order.order_number) }}">{{ order.order_number }}</a></td>
+          <td>{{ order.user.full_name }}</td>
+          <td><span class="status status-{{ order.status }}">{{ order.status|title }}</span></td>
+          <td>₹{{ order.total }}</td>
+          <td>{{ order.placed_at.strftime('%b %d, %Y') }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">No orders found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

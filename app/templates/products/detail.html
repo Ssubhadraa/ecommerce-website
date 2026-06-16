@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} — ShopHub{% endblock %}
+
+{% block meta %}
+<meta name="description" content="{{ product.description[:160] }}">
+<meta property="og:title" content="{{ product.name }}">
+<meta property="og:description" content="{{ product.description[:160] }}">
+<meta property="og:type" content="product">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  {% if breadcrumbs %}
+    {% set breadcrumb_trail = breadcrumbs %}
+    {% include "partials/breadcrumbs.html" with context %}
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <span>/</span><span>{{ product.name }}</span>
+    </nav>
+  {% endif %}
+
+  <div class="product-detail">
+    <div class="product-gallery">
+      <div class="gallery-main">
+        <img id="main-image" src="{{ product.primary_image|product_image_url }}" alt="{{ product.name }}">
+      </div>
+      {% if product.images|length > 1 %}
+      <div class="gallery-thumbs">
+        {% for image in product.images %}
+        <button type="button" class="thumb {% if image.is_primary %}active{% endif %}" data-src="{{ image.image_path|product_image_url }}">
+          <img src="{{ image.image_path|product_image_url }}" alt="{{ product.name }} thumbnail">
+        </button>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="product-info">
+      <h1>{{ product.name }}</h1>
+      <p class="sku">SKU: {{ product.sku }}</p>
+      <div class="price-row price-large">
+        <span class="price">₹{{ '%.2f'|format(product.price|float) }}</span>
+        {% if product.compare_price and product.compare_price > product.price %}
+          <span class="compare-price">₹{{ '%.2f'|format(product.compare_price|float) }}</span>
+          <span class="badge badge-sale">Save {{ product.discount_percent }}%</span>
+        {% endif %}
+      </div>
+      {% if product.in_stock %}
+        <p class="stock in-stock">✓ In Stock ({{ product.stock }} available)</p>
+      {% else %}
+        <p class="stock out-of-stock">Out of Stock</p>
+      {% endif %}
+
+      {% if current_user.is_authenticated and product.in_stock %}
+      <div class="product-actions">
+        <form action="{{ url_for('cart.add_to_cart') }}" method="post" class="add-to-cart-form" data-add-to-cart>
+          <input type="hidden" name="product_id" value="{{ product.id }}">
+          <div class="qty-row">
+            <label for="quantity">Qty</label>
+            <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ product.stock }}">
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg">Add to Cart</button>
+        </form>
+        <form action="{{ url_for('wishlist.toggle_wishlist') }}" method="post" class="wishlist-toggle-form" data-wishlist-toggle>
+          <input type="hidden" name="product_id" value="{{ product.id }}">
+          <button type="submit" class="btn btn-secondary btn-lg {% if product.id in wishlist_product_ids %}is-active{% endif %}">
+            {% if product.id in wishlist_product_ids %}♥ In Wishlist{% else %}♡ Add to Wishlist{% endif %}
+          </button>
+        </form>
+      </div>
+      {% elif current_user.is_authenticated %}
+        <form action="{{ url_for('wishlist.toggle_wishlist') }}" method="post" class="wishlist-toggle-form" data-wishlist-toggle>
+          <input type="hidden" name="product_id" value="{{ product.id }}">
+          <button type="submit" class="btn btn-secondary btn-lg {% if product.id in wishlist_product_ids %}is-active{% endif %}">
+            {% if product.id in wishlist_product_ids %}♥ In Wishlist{% else %}♡ Add to Wishlist{% endif %}
+          </button>
+        </form>
+      {% elif not current_user.is_authenticated %}
+        <a href="{{ url_for('auth.login', next=request.path) }}" class="btn btn-primary btn-lg">Login to Purchase</a>
+      {% endif %}
+
+      <div class="product-description">
+        <h2>Description</h2>
+        <p>{{ product.description }}</p>
+      </div>
+    </div>
+  </div>
+
+  {% if bought_together %}
+  <section class="section">
+    <h2 class="section-title">Frequently Bought Together</h2>
+    <div class="product-grid">
+      {% for item in bought_together %}
+        {% set product = item %}
+        {% include "partials/product_card.html" with context %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.gallery-thumbs .thumb').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.getElementById('main-image').src = btn.dataset.src;
+    document.querySelectorAll('.gallery-thumbs .thumb').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+</script>
+{% endblock %}

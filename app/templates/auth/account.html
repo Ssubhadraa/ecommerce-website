@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}My Account — ShopHub{% endblock %}
+
+{% block content %}
+<div class="container narrow-page">
+  <h1>My Account</h1>
+  <div class="card">
+    <form method="post">
+      <div class="form-group">
+        <label for="full_name">Full Name</label>
+        <input type="text" id="full_name" name="full_name" value="{{ current_user.full_name }}" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" value="{{ current_user.email }}" disabled>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" name="phone" value="{{ current_user.phone or '' }}">
+      </div>
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+  </div>
+  <div class="quick-links">
+    <a href="{{ url_for('auth.addresses') }}" class="card link-card">Manage Addresses →</a>
+    <a href="{{ url_for('orders.order_history') }}" class="card link-card">Order History →</a>
+  </div>
+</div>
+{% endblock %}

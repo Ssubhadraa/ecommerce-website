@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Addresses — ShopHub{% endblock %}
+
+{% block content %}
+<div class="container narrow-page">
+  <h1>Shipping Addresses</h1>
+
+  <div class="card">
+    <h2>Add New Address</h2>
+    <form method="post" action="{{ url_for('auth.add_address') }}" class="address-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="label">Label</label>
+          <input type="text" id="label" name="label" placeholder="Home, Work...">
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label"><input type="checkbox" name="is_default"> Set as default</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="line1">Address Line 1</label>
+        <input type="text" id="line1" name="line1" required>
+      </div>
+      <div class="form-group">
+        <label for="line2">Address Line 2</label>
+        <input type="text" id="line2" name="line2">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="city">City</label>
+          <input type="text" id="city" name="city" required>
+        </div>
+        <div class="form-group">
+          <label for="state">State</label>
+          <input type="text" id="state" name="state" required>
+        </div>
+        <div class="form-group">
+          <label for="pincode">Pincode</label>
+          <input type="text" id="pincode" name="pincode" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Add Address</button>
+    </form>
+  </div>
+
+  <div class="address-list">
+    {% for address in addresses %}
+    <div class="card address-card {% if address.is_default %}default{% endif %}">
+      <div class="address-header">
+        <strong>{{ address.label }}</strong>
+        {% if address.is_default %}<span class="badge">Default</span>{% endif %}
+      </div>
+      <p>{{ address.formatted() }}</p>
+      <div class="address-actions">
+        {% if not address.is_default %}
+        <form method="post" action="{{ url_for('auth.set_default_address', address_id=address.id) }}">
+          <button type="submit" class="btn btn-secondary btn-sm">Set Default</button>
+        </form>
+        {% endif %}
+        <form method="post" action="{{ url_for('auth.delete_address', address_id=address.id) }}" onsubmit="return confirm('Delete this address?')">
+          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+        </form>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state"><p>No addresses saved yet.</p></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

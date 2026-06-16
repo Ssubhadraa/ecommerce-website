@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Order {{ order.order_number }} — ShopHub{% endblock %}
+
+{% block content %}
+<div class="container narrow-page">
+  <h1>Order {{ order.order_number }}</h1>
+  <div class="card">
+    <div class="order-meta">
+      <p><strong>Status:</strong> <span class="status status-{{ order.status }}">{{ order.status|title }}</span></p>
+      <p><strong>Placed:</strong> {{ order.placed_at.strftime('%b %d, %Y at %I:%M %p') }}</p>
+      <p><strong>Payment:</strong> {{ order.payment_method|upper }} — {{ order.payment_status|title }}</p>
+    </div>
+
+    <h2>Items</h2>
+    <table class="data-table">
+      <thead>
+        <tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+      </thead>
+      <tbody>
+        {% for item in order.items %}
+        <tr>
+          <td>{{ item.product_name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>₹{{ item.unit_price }}</td>
+          <td>₹{{ item.line_total }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="summary-block">
+      <div class="summary-row"><span>Subtotal</span><span>₹{{ order.subtotal }}</span></div>
+      <div class="summary-row"><span>Shipping</span><span>₹{{ order.shipping_cost }}</span></div>
+      <div class="summary-row"><span>Tax</span><span>₹{{ order.tax }}</span></div>
+      <div class="summary-row total"><span>Total</span><span>₹{{ order.total }}</span></div>
+    </div>
+
+    <h2>Shipping Address</h2>
+    <p>
+      {{ order.shipping_address.line1 }}{% if order.shipping_address.line2 %}, {{ order.shipping_address.line2 }}{% endif %}<br>
+      {{ order.shipping_address.city }}, {{ order.shipping_address.state }} {{ order.shipping_address.pincode }}
+    </p>
+  </div>
+  <a href="{{ url_for('orders.order_history') }}" class="link-arrow">← Back to Orders</a>
+</div>
+{% endblock %}

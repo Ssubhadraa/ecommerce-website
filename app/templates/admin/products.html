@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Products — ShopHub{% endblock %}
+
+{% block content %}
+<div class="container admin-page">
+  <div class="admin-header">
+    <h1>Products</h1>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('admin.products') }}" class="active">Products</a>
+      <a href="{{ url_for('admin.categories') }}">Categories</a>
+      <a href="{{ url_for('admin.orders') }}">Orders</a>
+    </nav>
+  </div>
+
+  <div class="admin-toolbar">
+    <form class="search-form inline" method="get">
+      <input type="search" name="q" value="{{ q }}" placeholder="Search products...">
+      <label class="checkbox-label"><input type="checkbox" name="show_inactive" value="1" {% if show_inactive %}checked{% endif %} onchange="this.form.submit()"> Show inactive</label>
+      <button type="submit" class="btn btn-secondary btn-sm">Search</button>
+    </form>
+    <a href="{{ url_for('admin.product_new') }}" class="btn btn-primary">Add Product</a>
+  </div>
+
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr><th>Product</th><th>SKU</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+        <tr>
+          <td>{{ product.name }}</td>
+          <td>{{ product.sku }}</td>
+          <td>₹{{ product.price }}</td>
+          <td class="{% if product.stock < 5 %}text-error{% endif %}">{{ product.stock }}</td>
+          <td>{% if product.is_active %}Active{% else %}Inactive{% endif %}</td>
+          <td class="actions">
+            <a href="{{ url_for('admin.product_edit', product_id=product.id) }}" class="btn btn-secondary btn-sm">Edit</a>
+            {% if product.is_active %}
+            <form method="post" action="{{ url_for('admin.product_deactivate', product_id=product.id) }}" style="display:inline">
+              <button type="submit" class="btn btn-danger btn-sm">Deactivate</button>
+            </form>
+            {% else %}
+            <form method="post" action="{{ url_for('admin.product_activate', product_id=product.id) }}" style="display:inline">
+              <button type="submit" class="btn btn-secondary btn-sm">Activate</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

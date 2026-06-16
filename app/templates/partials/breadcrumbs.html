@@ -1,0 +1,11 @@
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <a href="{{ url_for('products.home') }}">Home</a>
+  {% for item in breadcrumb_trail %}
+    <span>/</span>
+    {% if loop.last %}
+      <span>{{ item.name }}</span>
+    {% else %}
+      <a href="{{ url_for('products.product_list', category=item.slug) }}">{{ item.name }}</a>
+    {% endif %}
+  {% endfor %}
+</nav>

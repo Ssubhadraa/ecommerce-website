@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Categories — ShopHub{% endblock %}
+
+{% block content %}
+<div class="container admin-page">
+  <div class="admin-header">
+    <h1>Categories</h1>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('admin.products') }}">Products</a>
+      <a href="{{ url_for('admin.categories') }}" class="active">Categories</a>
+      <a href="{{ url_for('admin.orders') }}">Orders</a>
+    </nav>
+  </div>
+
+  <div class="card">
+    <h2>Add Category</h2>
+    <form method="post" class="inline-form">
+      <input type="text" name="name" placeholder="Category name" required>
+      <select name="parent_id">
+        <option value="">No parent (top level)</option>
+        {% for cat in categories %}
+        <option value="{{ cat.id }}">{{ cat.name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-primary btn-sm">Add</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <table class="data-table">
+      <thead><tr><th>Name</th><th>Slug</th><th>Parent</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for cat in categories %}
+        <tr>
+          <td>{{ cat.name }}</td>
+          <td>{{ cat.slug }}</td>
+          <td>{{ cat.parent.name if cat.parent else '—' }}</td>
+          <td>
+            <form method="post" action="{{ url_for('admin.category_delete', category_id=cat.id) }}" onsubmit="return confirm('Delete category?')">
+              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

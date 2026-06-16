@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Order {{ order.order_number }} — ShopHub{% endblock %}
+
+{% block content %}
+<div class="container admin-page narrow-page">
+  <div class="admin-header">
+    <h1>Order {{ order.order_number }}</h1>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.orders') }}">← Back to Orders</a>
+    </nav>
+  </div>
+
+  <div class="card">
+    <p><strong>Customer:</strong> {{ order.user.full_name }} ({{ order.user.email }})</p>
+    <p><strong>Placed:</strong> {{ order.placed_at.strftime('%b %d, %Y') }}</p>
+
+    <h2>Update Status</h2>
+    <form method="post" class="inline-form">
+      <select name="status">
+        {% for s in ['placed', 'confirmed', 'shipped', 'delivered', 'cancelled'] %}
+        <option value="{{ s }}" {% if order.status == s %}selected{% endif %}>{{ s|title }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-primary btn-sm">Update</button>
+    </form>
+
+    <h2>Items</h2>
+    <table class="data-table">
+      <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+      <tbody>
+        {% for item in order.items %}
+        <tr>
+          <td>{{ item.product_name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>₹{{ item.unit_price }}</td>
+          <td>₹{{ item.line_total }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="summary-block">
+      <div class="summary-row total"><span>Total</span><span>₹{{ order.total }}</span></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Server Error — ShopHub{% endblock %}
+{% block content %}
+<div class="container narrow-page">
+  <div class="empty-state card">
+    <h1>Something went wrong</h1>
+    <p>We're working on fixing this. Please try again later.</p>
+    <a href="{{ url_for('products.home') }}" class="btn btn-primary">Go Home</a>
+  </div>
+</div>
+{% endblock %}

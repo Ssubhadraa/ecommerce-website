@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard — ShopHub{% endblock %}
+
+{% block content %}
+<div class="container admin-page">
+  <div class="admin-header">
+    <h1>Dashboard</h1>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.dashboard') }}" class="active">Dashboard</a>
+      <a href="{{ url_for('admin.products') }}">Products</a>
+      <a href="{{ url_for('admin.categories') }}">Categories</a>
+      <a href="{{ url_for('admin.orders') }}">Orders</a>
+    </nav>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="card kpi-card">
+      <span class="kpi-label">Total Revenue</span>
+      <span class="kpi-value">₹{{ '%.2f'|format(revenue|float) }}</span>
+    </div>
+    <div class="card kpi-card">
+      <span class="kpi-label">Total Orders</span>
+      <span class="kpi-value">{{ total_orders }}</span>
+    </div>
+    <div class="card kpi-card">
+      <span class="kpi-label">Orders (30 days)</span>
+      <span class="kpi-value">{{ recent_orders }}</span>
+    </div>
+    <div class="card kpi-card">
+      <span class="kpi-label">Low Stock Items</span>
+      <span class="kpi-value {% if low_stock %}text-error{% endif %}">{{ low_stock|length }}</span>
+    </div>
+  </div>
+
+  {% if low_stock %}
+  <div class="card alert-card">
+    <h2>Low Stock Alerts (&lt; 5 units)</h2>
+    <ul>
+      {% for product in low_stock %}
+      <li>{{ product.name }} — {{ product.stock }} left (SKU: {{ product.sku }})</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <div class="card">
+    <h2>Recent Orders</h2>
+    <table class="data-table">
+      <thead>
+        <tr><th>Order</th><th>Customer</th><th>Status</th><th>Total</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        {% for order in latest_orders %}
+        <tr>
+          <td><a href="{{ url_for('admin.order_detail', order_number=order.order_number) }}">{{ order.order_number }}</a></td>
+          <td>{{ order.user.full_name }}</td>
+          <td><span class="status status-{{ order.status }}">{{ order.status|title }}</span></td>
+          <td>₹{{ order.total }}</td>
+          <td>{{ order.placed_at.strftime('%b %d, %Y') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

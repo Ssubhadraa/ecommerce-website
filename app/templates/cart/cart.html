@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart — ShopHub{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Shopping Cart</h1>
+
+  {% if items %}
+  <div class="cart-layout">
+    <div class="cart-items">
+      {% for item in items %}
+      <div class="cart-item card">
+        <img src="{{ item.product.primary_image|product_image_url }}" alt="{{ item.product.name }}">
+        <div class="cart-item-info">
+          <a href="{{ url_for('products.product_detail', slug=item.product.slug) }}"><h3>{{ item.product.name }}</h3></a>
+          <p class="price">₹{{ '%.2f'|format(item.product.price|float) }} each</p>
+        </div>
+        <form action="{{ url_for('cart.update_cart_item', item_id=item.id) }}" method="post" class="cart-qty-form">
+          <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}">
+          <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+        </form>
+        <div class="cart-line-total">₹{{ '%.2f'|format(item.line_total) }}</div>
+        <form action="{{ url_for('cart.remove_cart_item', item_id=item.id) }}" method="post">
+          <button type="submit" class="btn btn-danger btn-sm" aria-label="Remove">✕</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+    <aside class="cart-summary card">
+      <h2>Order Summary</h2>
+      <div class="summary-row"><span>Subtotal</span><span>₹{{ '%.2f'|format(subtotal) }}</span></div>
+      <a href="{{ url_for('orders.checkout') }}" class="btn btn-primary btn-block btn-lg">Proceed to Checkout</a>
+      <a href="{{ url_for('products.product_list') }}" class="link-muted">Continue Shopping</a>
+    </aside>
+  </div>
+
+  {% if recommendations %}
+  <section class="section">
+    <h2 class="section-title">You Might Also Like</h2>
+    <div class="product-grid">
+      {% for product in recommendations %}
+        {% include "partials/product_card.html" with context %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state card">
+    <h2>Your cart is empty</h2>
+    <p>Add items to get started.</p>
+    <a href="{{ url_for('products.product_list') }}" class="btn btn-primary">Browse Products</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

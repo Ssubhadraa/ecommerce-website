@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}ShopHub — Online Shopping{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-copy">
+      <h1>Discover deals on top brands</h1>
+      <p>Electronics, fashion, books, home essentials and more — delivered to your door.</p>
+      <a href="{{ url_for('products.product_list') }}" class="btn btn-primary">Shop Now</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Shop by Category</h2>
+    <div class="category-grid">
+      {% for cat in categories %}
+      <a href="{{ url_for('products.product_list', category=cat.slug) }}" class="category-card">
+        <div class="category-icon">{{ cat.name[0] }}</div>
+        <span>{{ cat.name }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% if recommended %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Recommended for You</h2>
+      <a href="{{ url_for('products.product_list', sort='popularity') }}" class="link-arrow">See all →</a>
+    </div>
+    <div class="product-grid">
+      {% for product in recommended %}
+        {% include "partials/product_card.html" with context %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if trending %}
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Trending Now</h2>
+    </div>
+    <div class="product-scroll">
+      {% for product in trending %}
+        {% include "partials/product_card.html" with context %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}
